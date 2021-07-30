@@ -5,16 +5,17 @@ stages:
     container: <Probably a gradle container here>
     steps:
     - script: chmod +x gradlew && ./gradlew build jacocoTestReport
-- stage: SonarQube
-  jobs:
-  - job: Sonarscan
-    steps:
-    - script: |
-        echo "Sonarqube Integration"
-- stage: DockerBuildPush
-  jobs:
-  - job: DockerBuildPush
-    steps:
-    - script: |
-        echo "Docker Build"
-        echo "Docker Push"
+    - script: ls 
+# - stage: SonarQube
+#   jobs:
+#   - job: Sonarscan
+#     steps:
+#     - script: |
+#         echo "Sonarqube Integration"
+# - stage: DockerBuildPush
+#   jobs:
+#   - job: DockerBuildPush
+#     steps:
+#     - script: |
+#         echo "Docker Build"
+#         echo "Docker Push"
