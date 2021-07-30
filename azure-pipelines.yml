@@ -20,14 +20,14 @@ stages:
   jobs:
   - job: Sonarscan
     steps:
-    - script: |
-        echo "Sonarqube Integration"
+    - script: mkdir build
     - task: DownloadPipelineArtifact@2
       inputs:
         buildType: 'current'
         artifactName: 'spring-app'
-        targetPath: '.'
+        targetPath: 'build'
     - script: ls
+    - script: ls build
     
     
 # - stage: DockerBuildPush
