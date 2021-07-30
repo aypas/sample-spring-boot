@@ -18,8 +18,6 @@ stages:
         cliSources: '.'
         extraProperties: sonar.java.binaries=build/**/*
     - script: chmod +x gradlew && ./gradlew build jacocoTestReport
-    - script: ls build
-    - script: ls
     - task: SonarCloudAnalyze@1
     - task: SonarCloudPublish@1
       inputs:
@@ -52,7 +50,6 @@ stages:
   jobs:
   - job: DeployAKS
     steps:
-      - script: ls
       - task: KubernetesManifest@0
         inputs:
           action: 'deploy'
