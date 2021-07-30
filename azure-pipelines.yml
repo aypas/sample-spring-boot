@@ -5,7 +5,7 @@ stages:
 - stage: Compile
   jobs:
   - job: Compile
-    container: gradle:7.1-jdk8
+    container: gradle:7.1-jdk11
     steps:
     - task: SonarCloudPrepare@1
       inputs:
