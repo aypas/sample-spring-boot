@@ -1,7 +1,7 @@
 pool:
   vmImage: 'ubuntu-latest'
 
-# stages:
+stages:
 # - stage: Compile
 #   jobs:
 #   - job: Compile
