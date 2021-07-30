@@ -1,51 +1,51 @@
 pool:
   vmImage: 'ubuntu-latest'
 
-stages:
-- stage: Compile
-  jobs:
-  - job: Compile
-    container: gradle:7.1-jdk11
-    steps:
-    - task: SonarCloudPrepare@1
-      inputs:
-        SonarCloud: 'sonar-token'
-        organization: 'aypas'
-        scannerMode: 'CLI'
-        configMode: 'manual'
-        cliProjectKey: 'aypas_sample-spring-boot'
-        cliProjectName: 'sample-spring-boot'
-        cliSources: '.'
-        extraProperties: sonar.java.binaries=build/**/*
-    - script: chmod +x gradlew && ./gradlew build jacocoTestReport
-    - script: ls build
-    - script: ls
-    - task: SonarCloudAnalyze@1
-    - task: SonarCloudPublish@1
-      inputs:
-        pollingTimeoutSec: '300'
-    - task: PublishPipelineArtifact@1
-      inputs:
-        targetPath: 'build'
-        artifact: 'spring-app'
-        publishLocation: 'pipeline'
+# stages:
+# - stage: Compile
+#   jobs:
+#   - job: Compile
+#     container: gradle:7.1-jdk11
+#     steps:
+#     - task: SonarCloudPrepare@1
+#       inputs:
+#         SonarCloud: 'sonar-token'
+#         organization: 'aypas'
+#         scannerMode: 'CLI'
+#         configMode: 'manual'
+#         cliProjectKey: 'aypas_sample-spring-boot'
+#         cliProjectName: 'sample-spring-boot'
+#         cliSources: '.'
+#         extraProperties: sonar.java.binaries=build/**/*
+#     - script: chmod +x gradlew && ./gradlew build jacocoTestReport
+#     - script: ls build
+#     - script: ls
+#     - task: SonarCloudAnalyze@1
+#     - task: SonarCloudPublish@1
+#       inputs:
+#         pollingTimeoutSec: '300'
+#     - task: PublishPipelineArtifact@1
+#       inputs:
+#         targetPath: 'build'
+#         artifact: 'spring-app'
+#         publishLocation: 'pipeline'
     
-- stage: DockerBuildPush
-  jobs:
-  - job: DockerBuildPush
-    steps:
-    - script: mkdir build
-    - task: DownloadPipelineArtifact@2
-      inputs:
-        buildType: 'current'
-        artifactName: 'spring-app'
-        targetPath: 'build'
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'docker_hub'
-        repository: 'aypas/spring-hello'
-        command: 'buildAndPush'
-        Dockerfile: '**/Dockerfile'
+# - stage: DockerBuildPush
+#   jobs:
+#   - job: DockerBuildPush
+#     steps:
+#     - script: mkdir build
+#     - task: DownloadPipelineArtifact@2
+#       inputs:
+#         buildType: 'current'
+#         artifactName: 'spring-app'
+#         targetPath: 'build'
+#     - task: Docker@2
+#       inputs:
+#         containerRegistry: 'docker_hub'
+#         repository: 'aypas/spring-hello'
+#         command: 'buildAndPush'
+#         Dockerfile: '**/Dockerfile'
 
 - stage: Deploy
   displayName: Deploy to AKS cluster
@@ -57,6 +57,7 @@ stages:
         runOnce:
           deploy:
             steps:
+              - script: ls
               - task: KubernetesManifest@0
                 inputs:
                   action: 'deploy'
