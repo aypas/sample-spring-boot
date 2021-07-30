@@ -5,29 +5,8 @@ stages:
 - stage: Compile
   jobs:
   - job: Compile
-    container: gradle:7.1-jdk8
+    container: gradle:7.1-jdk11
     steps:
-    - script: chmod +x gradlew && ./gradlew build jacocoTestReport
-    - script: ls build
-    - script: ls
-    - task: PublishPipelineArtifact@1
-      inputs:
-        targetPath: 'build'
-        artifact: 'spring-app'
-        publishLocation: 'pipeline'
-
-- stage: SonarQube
-  jobs:
-  - job: Sonarscan
-    steps:
-    - script: mkdir build
-    - task: DownloadPipelineArtifact@2
-      inputs:
-        buildType: 'current'
-        artifactName: 'spring-app'
-        targetPath: 'build'
-    - script: ls
-    - script: ls build
     - task: SonarCloudPrepare@1
       inputs:
         SonarCloud: 'sonar-token'
@@ -38,15 +17,32 @@ stages:
         cliProjectName: 'sample-spring-boot'
         cliSources: '.'
         extraProperties: sonar.java.binaries=build/**/*
+    - script: chmod +x gradlew && ./gradlew build jacocoTestReport
+    - script: ls build
+    - script: ls
     - task: SonarCloudAnalyze@1
     - task: SonarCloudPublish@1
       inputs:
         pollingTimeoutSec: '300'
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: 'build'
+        artifact: 'spring-app'
+        publishLocation: 'pipeline'
     
-# - stage: DockerBuildPush
-#   jobs:
-#   - job: DockerBuildPush
-#     steps:
-#     - script: |
-#         echo "Docker Build"
-#         echo "Docker Push"
+- stage: DockerBuildPush
+  jobs:
+  - job: DockerBuildPush
+    steps:
+    - script: mkdir build
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: 'spring-app'
+        targetPath: 'build'
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'docker_hub'
+        repository: 'aypas/spring-hello'
+        command: 'buildAndPush'
+        Dockerfile: '**/Dockerfile'
