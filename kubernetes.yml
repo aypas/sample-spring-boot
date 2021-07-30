@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: springboot-sample
-          image: <Your Docker Image>:<Your Image Tag>
+          image: aypas/spring-hello:7789
           ports:
             - containerPort: 8080
 ---
@@ -31,5 +31,5 @@ spec:
       targetPort: 8080
       protocol: TCP
   selector:
-    app: sample-spring-boot-app
+    app: sample-spring-boot
   type: LoadBalancer # Type loadbalancer will use the underlying cloud provider to create an external url for accessing the app
