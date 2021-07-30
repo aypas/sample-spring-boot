@@ -28,7 +28,17 @@ stages:
         targetPath: 'build'
     - script: ls
     - script: ls build
-    
+    - task: SonarCloudPrepare@1
+      inputs:
+        SonarCloud: 'sonar-token'
+        organization: 'aypas'
+        scannerMode: 'MSBuild'
+        projectKey: 'aypas_sample-spring-boot'
+        projectName: 'sample-spring-boot'
+    - task: SonarCloudAnalyze@1
+    - task: SonarCloudPublish@1
+      inputs:
+        pollingTimeoutSec: '300'
     
 # - stage: DockerBuildPush
 #   jobs:
