@@ -46,3 +46,18 @@ stages:
         repository: 'aypas/spring-hello'
         command: 'buildAndPush'
         Dockerfile: '**/Dockerfile'
+
+- stage: Deploy
+  displayName: Deploy to AKS cluster
+  jobs:
+    - deployment: Deployment job
+      displayName: Deploying to AKS environment
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - task: KubernetesManifest@0
+                inputs:
+                  action: 'deploy'
+                  kubernetesServiceConnection: 'test_aks_cluster'
+                  manifests: 'kubernetes.yml'
