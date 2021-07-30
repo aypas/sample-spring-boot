@@ -48,18 +48,12 @@ stages:
 #         Dockerfile: '**/Dockerfile'
 
 - stage: Deploy
-  displayName: Deploy to AKS cluster
   jobs:
-    - deployment: Deployment
-      displayName: Deploying to AKS environment
-      environment: test_aks_cluster
-      strategy:
-        runOnce:
-          deploy:
-            steps:
-              - script: ls
-              - task: KubernetesManifest@0
-                inputs:
-                  action: 'deploy'
-                  kubernetesServiceConnection: 'test_aks_cluster'
-                  manifests: 'kubernetes.yml'
+  - job: DeployAKS
+    steps:
+      - script: ls
+      - task: KubernetesManifest@0
+        inputs:
+          action: 'deploy'
+          kubernetesServiceConnection: 'test_aks_cluster'
+          manifests: 'kubernetes.yml'
