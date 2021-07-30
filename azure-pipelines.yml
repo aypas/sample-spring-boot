@@ -7,18 +7,7 @@ stages:
   - job: Compile
     container: gradle:7.1-jdk8
     steps:
-    - task: SonarCloudPrepare@1
-      inputs:
-        SonarCloud: 'sonar-token'
-        organization: 'aypas'
-        scannerMode: 'MSBuild'
-        projectKey: 'aypas_sample-spring-boot'
-        projectName: 'sample-spring-boot'
     - script: chmod +x gradlew && ./gradlew build jacocoTestReport
-    - task: SonarCloudAnalyze@1
-    - task: SonarCloudPublish@1
-      inputs:
-        pollingTimeoutSec: '300'
     - script: ls build
     - script: ls
     - task: PublishPipelineArtifact@1
@@ -27,29 +16,32 @@ stages:
         artifact: 'spring-app'
         publishLocation: 'pipeline'
 
-# - stage: SonarQube
-#   jobs:
-#   - job: Sonarscan
-#     steps:
-#     - script: mkdir build
-#     - task: DownloadPipelineArtifact@2
-#       inputs:
-#         buildType: 'current'
-#         artifactName: 'spring-app'
-#         targetPath: 'build'
-#     - script: ls
-#     - script: ls build
-#     - task: SonarCloudPrepare@1
-#       inputs:
-#         SonarCloud: 'sonar-token'
-#         organization: 'aypas'
-#         scannerMode: 'MSBuild'
-#         projectKey: 'aypas_sample-spring-boot'
-#         projectName: 'sample-spring-boot'
-#     - task: SonarCloudAnalyze@1
-#     - task: SonarCloudPublish@1
-#       inputs:
-#         pollingTimeoutSec: '300'
+- stage: SonarQube
+  jobs:
+  - job: Sonarscan
+    steps:
+    - script: mkdir build
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: 'spring-app'
+        targetPath: 'build'
+    - script: ls
+    - script: ls build
+    - task: SonarCloudPrepare@1
+      inputs:
+        SonarCloud: 'sonar-token'
+        organization: 'aypas'
+        scannerMode: 'CLI'
+        configMode: 'manual'
+        cliProjectKey: 'aypas_sample-spring-boot'
+        cliProjectName: 'sample-spring-boot'
+        cliSources: '.'
+        extraProperties: sonar.java.binaries=build/**/*
+    - task: SonarCloudAnalyze@1
+    - task: SonarCloudPublish@1
+      inputs:
+        pollingTimeoutSec: '300'
     
 # - stage: DockerBuildPush
 #   jobs:
