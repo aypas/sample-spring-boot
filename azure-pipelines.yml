@@ -7,27 +7,6 @@ stages:
   - job: Compile
     container: gradle:7.1-jdk8
     steps:
-    - script: chmod +x gradlew && ./gradlew build jacocoTestReport
-    - script: ls build
-    - script: ls
-    - task: PublishPipelineArtifact@1
-      inputs:
-        targetPath: 'build'
-        artifact: 'spring-app'
-        publishLocation: 'pipeline'
-
-- stage: SonarQube
-  jobs:
-  - job: Sonarscan
-    steps:
-    - script: mkdir build
-    - task: DownloadPipelineArtifact@2
-      inputs:
-        buildType: 'current'
-        artifactName: 'spring-app'
-        targetPath: 'build'
-    - script: ls
-    - script: ls build
     - task: SonarCloudPrepare@1
       inputs:
         SonarCloud: 'sonar-token'
@@ -38,18 +17,53 @@ stages:
         cliProjectName: 'sample-spring-boot'
         cliSources: '.'
         extraProperties: sonar.java.binaries=build/**/*
+    - script: chmod +x gradlew && ./gradlew build jacocoTestReport
+    - script: ls build
+    - script: ls
     - task: SonarCloudAnalyze@1
     - task: SonarCloudPublish@1
       inputs:
         pollingTimeoutSec: '300'
-    
-- stage: DockerBuildPush
-  jobs:
-  - job: DockerBuildPush
-    steps:
-    - task: Docker@2
+    - task: PublishPipelineArtifact@1
       inputs:
-        containerRegistry: 'docker_hub'
-        repository: 'aypas/spring-hello'
-        command: 'buildAndPush'
-        Dockerfile: '**/Dockerfile'
+        targetPath: 'build'
+        artifact: 'spring-app'
+        publishLocation: 'pipeline'
+
+# - stage: SonarQube
+#   jobs:
+#   - job: Sonarscan
+#     steps:
+#     - script: mkdir build
+#     - task: DownloadPipelineArtifact@2
+#       inputs:
+#         buildType: 'current'
+#         artifactName: 'spring-app'
+#         targetPath: 'build'
+#     - script: ls
+#     - script: ls build
+#     - task: SonarCloudPrepare@1
+#       inputs:
+#         SonarCloud: 'sonar-token'
+#         organization: 'aypas'
+#         scannerMode: 'CLI'
+#         configMode: 'manual'
+#         cliProjectKey: 'aypas_sample-spring-boot'
+#         cliProjectName: 'sample-spring-boot'
+#         cliSources: '.'
+#         extraProperties: sonar.java.binaries=build/**/*
+#     - task: SonarCloudAnalyze@1
+#     - task: SonarCloudPublish@1
+#       inputs:
+#         pollingTimeoutSec: '300'
+    
+# - stage: DockerBuildPush
+#   jobs:
+#   - job: DockerBuildPush
+#     steps:
+#     - task: Docker@2
+#       inputs:
+#         containerRegistry: 'docker_hub'
+#         repository: 'aypas/spring-hello'
+#         command: 'buildAndPush'
+#         Dockerfile: '**/Dockerfile'
