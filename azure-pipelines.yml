@@ -43,10 +43,13 @@ stages:
       inputs:
         pollingTimeoutSec: '300'
     
-# - stage: DockerBuildPush
-#   jobs:
-#   - job: DockerBuildPush
-#     steps:
-#     - script: |
-#         echo "Docker Build"
-#         echo "Docker Push"
+- stage: DockerBuildPush
+  jobs:
+  - job: DockerBuildPush
+    steps:
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'docker_hub'
+        repository: 'aypas/spring-hello'
+        command: 'buildAndPush'
+        Dockerfile: '**/Dockerfile'
