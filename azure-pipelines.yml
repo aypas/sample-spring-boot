@@ -8,13 +8,28 @@ stages:
     container: gradle:7.1-jdk8
     steps:
     - script: chmod +x gradlew && ./gradlew build jacocoTestReport
-    - script: ls 
-# - stage: SonarQube
-#   jobs:
-#   - job: Sonarscan
-#     steps:
-#     - script: |
-#         echo "Sonarqube Integration"
+    - script: ls build
+    - script: ls
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(Pipeline.Workspace)/build/libs'
+        artifact: 'spring-app'
+        publishLocation: 'pipeline'
+
+- stage: SonarQube
+  jobs:
+  - job: Sonarscan
+    steps:
+    - script: |
+        echo "Sonarqube Integration"
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: 'spring-app'
+        targetPath: '$(Pipeline.Workspace)'
+    - script: ls
+    
+    
 # - stage: DockerBuildPush
 #   jobs:
 #   - job: DockerBuildPush
